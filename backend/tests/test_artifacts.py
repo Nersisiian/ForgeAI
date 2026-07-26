@@ -1,19 +1,13 @@
-
-=== backend/tests/test_artifacts.py ===
-```python
-import pytest
+﻿import pytest
 from httpx import AsyncClient
-from app.core.security import create_access_token
+from app.core.security import create_access_token, get_password_hash
 from app.db.models.user import User
 from app.db.models.project import Project
 from app.db.models.file_artifact import FileArtifact
-from app.services.auth_service import AuthService
 
 
 @pytest.mark.asyncio
 async def test_get_artifacts_empty(client: AsyncClient, db_session):
-    # create user and project
-    from app.core.security import get_password_hash
     user = User(
         email="artifacts@test.com",
         hashed_password=get_password_hash("test"),
@@ -32,7 +26,6 @@ async def test_get_artifacts_empty(client: AsyncClient, db_session):
     db_session.add(project)
     await db_session.commit()
 
-    # list artifacts
     response = await client.get(f"/api/v1/artifacts/project/{project.id}", headers=headers)
     assert response.status_code == 200
     assert response.json() == []
@@ -40,7 +33,6 @@ async def test_get_artifacts_empty(client: AsyncClient, db_session):
 
 @pytest.mark.asyncio
 async def test_get_artifacts_with_files(client: AsyncClient, db_session):
-    from app.core.security import get_password_hash
     user = User(
         email="artifacts2@test.com",
         hashed_password=get_password_hash("test"),
@@ -77,7 +69,6 @@ async def test_get_artifacts_with_files(client: AsyncClient, db_session):
 
 @pytest.mark.asyncio
 async def test_update_artifact(client: AsyncClient, db_session):
-    from app.core.security import get_password_hash
     user = User(
         email="artifacts3@test.com",
         hashed_password=get_password_hash("test"),
@@ -109,7 +100,6 @@ async def test_update_artifact(client: AsyncClient, db_session):
 
 @pytest.mark.asyncio
 async def test_unauthorized_artifact_access(client: AsyncClient, db_session):
-    from app.core.security import get_password_hash
     user1 = User(email="u1@t.com", hashed_password=get_password_hash("test"), is_active=True)
     user2 = User(email="u2@t.com", hashed_password=get_password_hash("test"), is_active=True)
     db_session.add_all([user1, user2])
@@ -123,6 +113,5 @@ async def test_unauthorized_artifact_access(client: AsyncClient, db_session):
     await db_session.commit()
 
     headers = {"Authorization": f"Bearer {token1}"}
-    # Trying to access user2's artifact
     response = await client.get(f"/api/v1/artifacts/project/{project.id}", headers=headers)
     assert response.status_code == 403

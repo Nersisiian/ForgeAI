@@ -1,7 +1,6 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
-from jose import JWTError
 from app.core.security import decode_token
 from app.core.database import AsyncSessionLocal
 from app.db.models.user import User

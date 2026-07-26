@@ -1,7 +1,7 @@
 from uuid import UUID
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
+from sqlalchemy import select
 from app.db.models.file_artifact import FileArtifact
 from app.db.models.project import Project
 from app.core.exceptions import NotFoundError, ForbiddenError

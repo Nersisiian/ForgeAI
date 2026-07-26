@@ -1,14 +1,10 @@
 import pytest
 from uuid import uuid4
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, patch
 from app.agents.planner import PlannerAgent
 from app.agents.architect import ArchitectAgent
 from app.agents.backend_generator import BackendGeneratorAgent
 from app.agents.frontend_generator import FrontendGeneratorAgent
-from app.agents.database_generator import DatabaseGeneratorAgent
-from app.agents.docker_generator import DockerGeneratorAgent
-from app.agents.testing_generator import TestingGeneratorAgent
-from app.agents.documentation_generator import DocumentationGeneratorAgent
 from app.agents.review_agent import ReviewAgent
 from app.agents.fix_agent import FixAgent
 from app.db.models.project import Project

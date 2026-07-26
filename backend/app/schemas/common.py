@@ -1,7 +1,4 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Optional
-from uuid import UUID
-from datetime import datetime
 
 
 class BaseSchema(BaseModel):

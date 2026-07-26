@@ -1,4 +1,4 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from app.core.redis import redis_client
 from app.api.dependencies import get_current_user_ws
 import json

@@ -1,5 +1,4 @@
 import pytest
-from httpx import AsyncClient
 from fastapi.testclient import TestClient
 from app.main import app
 from app.core.security import create_access_token
@@ -25,7 +24,7 @@ async def test_websocket_connection_and_disconnect(db_session):
 
     # Use TestClient with websocket
     from fastapi.testclient import TestClient
-    from app.api.dependencies import get_db, get_current_user_ws, get_current_user
+    from app.api.dependencies import get_db
     # Override dependencies for testing
     async def override_get_db():
         yield db_session
