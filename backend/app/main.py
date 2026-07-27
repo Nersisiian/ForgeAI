@@ -1,4 +1,4 @@
-from contextlib import asynccontextmanager
+﻿from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -7,14 +7,14 @@ from app import __version__
 from app.api.router import api_router
 from app.core.config import settings
 from app.core.logging import configure_logging
-from app.core.database import engine, Base
+from app.core.database import engine
+from app.db.base import Base
 from app.core.redis import redis_client
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     configure_logging()
-    # create tables (production uses alembic)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
