@@ -1,5 +1,5 @@
 from uuid import UUID
-from typing import List, Optional
+from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.db.models.generation_task import GenerationTask
@@ -40,7 +40,7 @@ class TaskService:
         return TaskResponse.model_validate(task)
 
     async def update_task_status(
-        self, task_id: UUID, status: str, error_message: Optional[str] = None
+        self, task_id: UUID, status: str, error_message: str | None = None
     ) -> TaskResponse:
         task = await self.session.get(GenerationTask, task_id)
         if not task:
@@ -53,7 +53,7 @@ class TaskService:
         return TaskResponse.model_validate(task)
 
     async def create_task(
-        self, project_id: UUID, agent_type: str, input_data: Optional[dict] = None
+        self, project_id: UUID, agent_type: str, input_data: dict | None = None
     ) -> TaskResponse:
         task = GenerationTask(
             project_id=project_id,
