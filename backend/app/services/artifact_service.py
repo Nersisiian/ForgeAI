@@ -1,5 +1,5 @@
 from uuid import UUID
-from typing import List, Optional
+from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.db.models.file_artifact import FileArtifact
@@ -18,7 +18,7 @@ class ArtifactService:
         self.session = session
 
     async def get_artifacts_for_project(
-        self, project_id: UUID, user_id: UUID, file_path_filter: Optional[str] = None
+        self, project_id: UUID, user_id: UUID, file_path_filter: str | None = None
     ) -> List[ArtifactResponse]:
         project = await self.session.get(Project, project_id)
         if not project:
@@ -63,7 +63,7 @@ class ArtifactService:
         return ArtifactResponse.model_validate(artifact)
 
     async def create_artifact(
-        self, project_id: UUID, file_path: str, content: str, task_id: Optional[UUID] = None
+        self, project_id: UUID, file_path: str, content: str, task_id: UUID | None = None
     ) -> ArtifactResponse:
         artifact = FileArtifact(
             project_id=project_id,

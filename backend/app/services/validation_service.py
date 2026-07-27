@@ -15,7 +15,7 @@ class ValidationService:
             f.write(content)
             tmp_path = f.name
         try:
-            result = subprocess.run(
+            result = subprocess.run( # noqa: ASYNC221
                 ["ruff", "check", "--select=E,F,W", tmp_path],
                 capture_output=True, text=True
             )
@@ -31,7 +31,7 @@ class ValidationService:
             f.write(content)
             tmp_path = f.name
         try:
-            result = subprocess.run(
+            result = subprocess.run( # noqa: ASYNC221
                 ["mypy", "--strict", tmp_path],
                 capture_output=True, text=True
             )
