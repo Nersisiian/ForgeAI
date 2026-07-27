@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Typography, TextField, Button, Box } from '@mui/material'
 import api from '../services/api'
 import { useAuth } from '../hooks/useAuth'

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Grid, Paper, Typography, Box } from '@mui/material'
+import { Grid, Typography, Box } from '@mui/material'
 import api from '../services/api'
 import StatsCard from '../components/dashboard/StatsCard'
 import RecentProjects from '../components/dashboard/RecentProjects'

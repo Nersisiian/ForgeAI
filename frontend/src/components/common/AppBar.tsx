@@ -1,4 +1,4 @@
-import { AppBar as MuiAppBar, Toolbar, Typography, IconButton, Box } from '@mui/material'
+import { AppBar as MuiAppBar, Toolbar, Typography, IconButton } from '@mui/material'
 import { Brightness4, Brightness7, Logout } from '@mui/icons-material'
 import { useAuth } from '../../hooks/useAuth'
 
