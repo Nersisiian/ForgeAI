@@ -1,0 +1,11 @@
+﻿target-version = "py312"
+
+[lint]
+ignore = [
+    "B008",
+    "BLE001",
+    "PLW1510",
+    "SIM117",
+    "B017",
+    "F841",
+]
