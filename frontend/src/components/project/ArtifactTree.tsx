@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { List, ListItemButton, ListItemText, Dialog, DialogTitle, DialogContent, Typography } from '@mui/material'
+import { List, ListItemButton, ListItemText, Dialog, DialogTitle, DialogContent } from '@mui/material'
 import api from '../../services/api'
 
 interface ArtifactTreeProps {
