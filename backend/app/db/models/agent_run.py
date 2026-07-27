@@ -9,7 +9,9 @@ class AgentRun(Base, TimestampMixin):
     __tablename__ = "agent_runs"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    task_id = Column(UUID(as_uuid=True), ForeignKey("generation_tasks.id"), nullable=False)
+    task_id = Column(
+        UUID(as_uuid=True), ForeignKey("generation_tasks.id"), nullable=False
+    )
     agent_name = Column(String(100), nullable=False)
     prompt = Column(Text, nullable=True)
     response = Column(Text, nullable=True)

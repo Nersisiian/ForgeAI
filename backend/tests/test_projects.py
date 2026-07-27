@@ -5,7 +5,9 @@ from httpx import AsyncClient
 @pytest.mark.asyncio
 async def test_create_project(client: AsyncClient):
     # login first
-    reg = await client.post("/api/v1/auth/register", json={"email": "p@test.com", "password": "pass1234"})
+    reg = await client.post(
+        "/api/v1/auth/register", json={"email": "p@test.com", "password": "pass1234"}
+    )
     token = reg.json()["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
     proj_data = {

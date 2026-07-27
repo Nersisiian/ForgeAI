@@ -3,7 +3,11 @@ from fastapi import APIRouter, Depends, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.dependencies import get_db, get_current_active_user
 from app.db.models.user import User
-from app.schemas.project import ProjectCreateRequest, ProjectResponse, ProjectListResponse
+from app.schemas.project import (
+    ProjectCreateRequest,
+    ProjectResponse,
+    ProjectListResponse,
+)
 from app.services.project_service import ProjectService
 from app.services.agent_orchestrator import AgentOrchestrator
 

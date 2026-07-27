@@ -15,7 +15,15 @@ async def get_agent_runs(
     db: AsyncSession = Depends(get_db),
     current_user=Depends(get_current_active_user),
 ):
-    runs = (await db.execute(
-        select(AgentRun).where(AgentRun.task_id == task_id).order_by(AgentRun.created_at)
-    )).scalars().all()
+    runs = (
+        (
+            await db.execute(
+                select(AgentRun)
+                .where(AgentRun.task_id == task_id)
+                .order_by(AgentRun.created_at)
+            )
+        )
+        .scalars()
+        .all()
+    )
     return [AgentRunResponse.model_validate(r) for r in runs]

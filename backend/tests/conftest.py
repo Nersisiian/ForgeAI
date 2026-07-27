@@ -5,8 +5,12 @@ from app.core.config import settings
 from app.main import app
 from httpx import AsyncClient, ASGITransport
 
-test_engine = create_async_engine(settings.DATABASE_URL.replace("pythonauto", "testdb"), echo=False)
-TestSessionLocal = async_sessionmaker(bind=test_engine, class_=AsyncSession, expire_on_commit=False)
+test_engine = create_async_engine(
+    settings.DATABASE_URL.replace("pythonauto", "testdb"), echo=False
+)
+TestSessionLocal = async_sessionmaker(
+    bind=test_engine, class_=AsyncSession, expire_on_commit=False
+)
 
 
 @pytest_asyncio.fixture(scope="session")
@@ -26,5 +30,7 @@ async def db_session(db_engine):
 
 @pytest_asyncio.fixture
 async def client(db_session):
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
         yield ac

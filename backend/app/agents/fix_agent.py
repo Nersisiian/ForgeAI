@@ -11,9 +11,14 @@ class FixAgent(BaseAgent):
     async def fix(self, issues: list[dict]) -> None:
         for issue in issues:
             file_path = issue["file"]
-            artifact = (await self.session.execute(
-                select(FileArtifact).where(FileArtifact.project_id == self.project_id, FileArtifact.file_path == file_path)
-            )).scalar_one_or_none()
+            artifact = (
+                await self.session.execute(
+                    select(FileArtifact).where(
+                        FileArtifact.project_id == self.project_id,
+                        FileArtifact.file_path == file_path,
+                    )
+                )
+            ).scalar_one_or_none()
             if artifact:
                 fix_prompt = (
                     f"Fix the following Python code to resolve these lint errors:\n"

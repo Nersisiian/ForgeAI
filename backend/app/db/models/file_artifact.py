@@ -10,7 +10,9 @@ class FileArtifact(Base, TimestampMixin):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     project_id = Column(UUID(as_uuid=True), ForeignKey("projects.id"), nullable=False)
-    task_id = Column(UUID(as_uuid=True), ForeignKey("generation_tasks.id"), nullable=True)
+    task_id = Column(
+        UUID(as_uuid=True), ForeignKey("generation_tasks.id"), nullable=True
+    )
     file_path = Column(String(500), nullable=False)
     content = Column(Text, nullable=True)
     status = Column(String(50), default="draft")  # draft, reviewed, approved, rejected

@@ -11,14 +11,23 @@ router = APIRouter(prefix="/artifacts", tags=["artifacts"])
 
 
 @router.get("/project/{project_id}", response_model=list[ArtifactResponse])
-async def get_artifacts(project_id: UUID, db: AsyncSession = Depends(get_db),
-                        current_user=Depends(get_current_active_user)):
+async def get_artifacts(
+    project_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
     project = await db.get(Project, project_id)
     if not project or project.owner_id != current_user.id:
         raise HTTPException(status_code=403)
-    artifacts = (await db.execute(
-        select(FileArtifact).where(FileArtifact.project_id == project_id)
-    )).scalars().all()
+    artifacts = (
+        (
+            await db.execute(
+                select(FileArtifact).where(FileArtifact.project_id == project_id)
+            )
+        )
+        .scalars()
+        .all()
+    )
     return [ArtifactResponse.model_validate(a) for a in artifacts]
 
 

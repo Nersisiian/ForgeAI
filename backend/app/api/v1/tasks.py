@@ -19,7 +19,15 @@ async def get_project_tasks(
     project = await db.get(Project, project_id)
     if not project or project.owner_id != current_user.id:
         raise HTTPException(status_code=403)
-    tasks = (await db.execute(
-        select(GenerationTask).where(GenerationTask.project_id == project_id).order_by(GenerationTask.created_at)
-    )).scalars().all()
+    tasks = (
+        (
+            await db.execute(
+                select(GenerationTask)
+                .where(GenerationTask.project_id == project_id)
+                .order_by(GenerationTask.created_at)
+            )
+        )
+        .scalars()
+        .all()
+    )
     return [TaskResponse.model_validate(t) for t in tasks]

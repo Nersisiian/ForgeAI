@@ -10,7 +10,9 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
-    DATABASE_URL: PostgresDsn = "postgresql+asyncpg://postgres:postgres@localhost:5432/pythonauto"
+    DATABASE_URL: PostgresDsn = (
+        "postgresql+asyncpg://postgres:postgres@localhost:5432/pythonauto"
+    )
     REDIS_URL: RedisDsn = "redis://localhost:6379/0"
     CELERY_BROKER_URL: str = "redis://localhost:6379/1"
 

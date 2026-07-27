@@ -63,7 +63,11 @@ class ArtifactService:
         return ArtifactResponse.model_validate(artifact)
 
     async def create_artifact(
-        self, project_id: UUID, file_path: str, content: str, task_id: UUID | None = None
+        self,
+        project_id: UUID,
+        file_path: str,
+        content: str,
+        task_id: UUID | None = None,
     ) -> ArtifactResponse:
         artifact = FileArtifact(
             project_id=project_id,

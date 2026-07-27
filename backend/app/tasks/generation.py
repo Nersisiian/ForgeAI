@@ -11,4 +11,5 @@ def run_generation_pipeline(project_id: str):
         async with AsyncSessionLocal() as session:
             orch = AgentOrchestrator(session, UUID(project_id))
             await orch.run_pipeline()
+
     asyncio.run(_run())

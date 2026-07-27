@@ -10,21 +10,33 @@ from app.db.models.project import Project
 
 @pytest.mark.asyncio
 async def test_websocket_connection_and_disconnect(db_session):
-    user = User(email="ws@test.com", hashed_password=get_password_hash("test"), is_active=True)
+    user = User(
+        email="ws@test.com", hashed_password=get_password_hash("test"), is_active=True
+    )
     db_session.add(user)
     await db_session.commit()
     project_id = "11111111-1111-1111-1111-111111111111"
-    project = Project(id=project_id, name="Test", natural_language_query="Q", target_type="fastapi", owner_id=user.id)
+    project = Project(
+        id=project_id,
+        name="Test",
+        natural_language_query="Q",
+        target_type="fastapi",
+        owner_id=user.id,
+    )
     db_session.add(project)
     await db_session.commit()
 
     async def override_get_db():
         yield db_session
 
-    with patch("app.api.v1.websocket.get_current_user_ws", new_callable=AsyncMock) as mock_ws_auth:
+    with patch(
+        "app.api.v1.websocket.get_current_user_ws", new_callable=AsyncMock
+    ) as mock_ws_auth:
         mock_ws_auth.return_value = str(user.id)
         client = TestClient(app)
-        with client.websocket_connect(f"/api/v1/ws/{project_id}?token=fake") as websocket:
+        with client.websocket_connect(
+            f"/api/v1/ws/{project_id}?token=fake"
+        ) as websocket:
             await asyncio.sleep(0.1)
             assert websocket is not None
             websocket.close()

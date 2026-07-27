@@ -5,6 +5,7 @@ from app.core.security import decode_token
 
 router = APIRouter()
 
+
 class ConnectionManager:
     def __init__(self):
         self.active_connections: dict[str, WebSocket] = {}

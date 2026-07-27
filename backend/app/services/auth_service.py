@@ -1,6 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from app.core.security import verify_password, get_password_hash, create_access_token, create_refresh_token, decode_token
+from app.core.security import (
+    verify_password,
+    get_password_hash,
+    create_access_token,
+    create_refresh_token,
+    decode_token,
+)
 from app.core.exceptions import BadRequestError, ForbiddenError, NotFoundError
 from app.db.models.user import User
 from app.schemas.auth import LoginRequest, RegisterRequest, TokenResponse
@@ -12,7 +18,9 @@ class AuthService:
         self.session = session
 
     async def register(self, data: RegisterRequest) -> UserResponse:
-        existing = (await self.session.execute(select(User).where(User.email == data.email))).scalar_one_or_none()
+        existing = (
+            await self.session.execute(select(User).where(User.email == data.email))
+        ).scalar_one_or_none()
         if existing:
             raise BadRequestError("Email already registered")
         user = User(
@@ -26,7 +34,9 @@ class AuthService:
         return UserResponse.model_validate(user)
 
     async def login(self, data: LoginRequest) -> TokenResponse:
-        result = await self.session.execute(select(User).where(User.email == data.email))
+        result = await self.session.execute(
+            select(User).where(User.email == data.email)
+        )
         user = result.scalar_one_or_none()
         if not user or not verify_password(data.password, user.hashed_password):
             raise ForbiddenError("Invalid credentials")

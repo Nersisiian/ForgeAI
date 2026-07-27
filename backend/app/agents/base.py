@@ -23,8 +23,11 @@ class BaseAgent(ABC):
         """Run the agent's generation logic."""
         ...
 
-    async def _save_artifact(self, file_path: str, content: str, task_id: UUID | None = None) -> None:
+    async def _save_artifact(
+        self, file_path: str, content: str, task_id: UUID | None = None
+    ) -> None:
         from app.db.models.file_artifact import FileArtifact
+
         artifact = FileArtifact(
             project_id=self.project_id,
             task_id=task_id or self.task_id,
@@ -35,11 +38,15 @@ class BaseAgent(ABC):
         self.session.add(artifact)
         await self.session.commit()
 
-    async def _validate_and_fix(self, file_path: str, content: str, task_id: UUID) -> str:
+    async def _validate_and_fix(
+        self, file_path: str, content: str, task_id: UUID
+    ) -> str:
         """Validate file, if issues found attempt auto-fix via LLM."""
         valid, errors = await self.validator.lint_code(file_path, content)
         if not valid:
-            logger.warning("Lint errors found, attempting fix", file=file_path, errors=errors)
+            logger.warning(
+                "Lint errors found, attempting fix", file=file_path, errors=errors
+            )
             fix_prompt = (
                 f"The following code has lint errors:\n```python\n{content}\n```\n"
                 f"Errors:\n{chr(10).join(errors)}\n"

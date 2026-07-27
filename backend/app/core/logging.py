@@ -2,6 +2,7 @@
 import sys
 import structlog
 
+
 def configure_logging() -> None:
     structlog.configure(
         processors=[

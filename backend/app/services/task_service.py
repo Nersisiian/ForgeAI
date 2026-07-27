@@ -17,15 +17,19 @@ class TaskService:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_tasks_for_project(self, project_id: UUID, user_id: UUID) -> List[TaskResponse]:
+    async def get_tasks_for_project(
+        self, project_id: UUID, user_id: UUID
+    ) -> List[TaskResponse]:
         project = await self.session.get(Project, project_id)
         if not project:
             raise NotFoundError("Project not found")
         if project.owner_id != user_id:
             raise ForbiddenError("Access denied")
-        query = select(GenerationTask).where(
-            GenerationTask.project_id == project_id
-        ).order_by(GenerationTask.created_at)
+        query = (
+            select(GenerationTask)
+            .where(GenerationTask.project_id == project_id)
+            .order_by(GenerationTask.created_at)
+        )
         result = await self.session.execute(query)
         tasks = result.scalars().all()
         return [TaskResponse.model_validate(t) for t in tasks]

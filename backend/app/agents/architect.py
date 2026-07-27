@@ -4,6 +4,7 @@ from app.agents.base import BaseAgent
 class ArchitectAgent(BaseAgent):
     async def execute(self) -> None:
         from app.db.models.project import Project
+
         project = await self.session.get(Project, self.project_id)
         prompt = f"""
 Based on this plan, produce a detailed technical specification:

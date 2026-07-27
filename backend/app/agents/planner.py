@@ -4,6 +4,7 @@ from app.agents.base import BaseAgent
 class PlannerAgent(BaseAgent):
     async def execute(self) -> None:
         from app.db.models.project import Project
+
         project = await self.session.get(Project, self.project_id)
         prompt = f"""
 You are a senior software architect. Plan a complete project structure for the following request:

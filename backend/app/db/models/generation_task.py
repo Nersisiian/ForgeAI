@@ -19,5 +19,7 @@ class GenerationTask(Base, TimestampMixin):
     completed_at = Column(DateTime(timezone=True), nullable=True)
 
     project = relationship("Project", back_populates="tasks")
-    agent_runs = relationship("AgentRun", back_populates="task", order_by="AgentRun.created_at")
+    agent_runs = relationship(
+        "AgentRun", back_populates="task", order_by="AgentRun.created_at"
+    )
     artifacts = relationship("FileArtifact", back_populates="task")

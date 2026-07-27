@@ -1,5 +1,14 @@
 from fastapi import APIRouter
-from app.api.v1 import auth, projects, tasks, agents, artifacts, users, settings, websocket
+from app.api.v1 import (
+    auth,
+    projects,
+    tasks,
+    agents,
+    artifacts,
+    users,
+    settings,
+    websocket,
+)
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/v1")

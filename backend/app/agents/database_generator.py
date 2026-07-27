@@ -11,6 +11,6 @@ class DatabaseGeneratorAgent(BaseAgent):
             await self._save_artifact(fpath, content, self.task_id)
 
     def _parse_files(self, text: str) -> dict[str, str]:
-        pattern = r'---FILE:\s*(.+?)---\s*```(?:python)?\n(.*?)```'
+        pattern = r"---FILE:\s*(.+?)---\s*```(?:python)?\n(.*?)```"
         matches = re.findall(pattern, text, re.DOTALL)
         return {path.strip(): code.strip() for path, code in matches}
