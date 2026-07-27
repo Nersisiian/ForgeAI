@@ -1,11 +1,15 @@
-from app.agents.base import BaseAgent
+﻿from app.agents.base import BaseAgent
 from app.db.models.file_artifact import FileArtifact
+from app.db.models.generation_task import GenerationTask
 from sqlalchemy import select
 
 
 class FixAgent(BaseAgent):
     async def execute(self) -> None:
-        issues = self.task.input_data.get("issues", [])
+        task = await self.session.get(GenerationTask, self.task_id)
+        if not task:
+            return
+        issues = task.input_data.get("issues", []) if task.input_data else []
         await self.fix(issues)
 
     async def fix(self, issues: list[dict]) -> None:
@@ -22,7 +26,7 @@ class FixAgent(BaseAgent):
             if artifact:
                 fix_prompt = (
                     f"Fix the following Python code to resolve these lint errors:\n"
-                    f"Code:\n```python\n{artifact.content}\n```\n"
+                    f"Code:\n`python\n{artifact.content}\n`\n"
                     f"Errors:\n{issue['errors']}\n"
                     f"Return only the fixed Python code."
                 )

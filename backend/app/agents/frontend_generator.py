@@ -1,4 +1,4 @@
-﻿import re
+import re
 from app.agents.base import BaseAgent
 from app.db.models.project import Project
 import structlog

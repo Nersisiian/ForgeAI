@@ -6,7 +6,7 @@ from app.main import app
 from httpx import AsyncClient, ASGITransport
 
 test_engine = create_async_engine(
-    settings.DATABASE_URL.replace("pythonauto", "testdb"), echo=False
+    str(settings.DATABASE_URL).replace("pythonauto", "testdb"), echo=False
 )
 TestSessionLocal = async_sessionmaker(
     bind=test_engine, class_=AsyncSession, expire_on_commit=False
