@@ -19,7 +19,6 @@ import {
 import { Visibility, Refresh } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import { useApi } from '../hooks/useApi';
 
 interface Project {
   id: string;
