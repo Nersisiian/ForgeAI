@@ -1,7 +1,7 @@
+﻿import json
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from app.core.redis import redis_client
-from app.api.dependencies import get_current_user_ws
-import json
+from app.core.security import decode_token
 
 router = APIRouter()
 
@@ -25,26 +25,18 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-async def get_current_user_ws(websocket: WebSocket):
-    # Extract token from query params and validate (simplified)
+@router.websocket("/ws/{project_id}")
+async def websocket_endpoint(websocket: WebSocket, project_id: str):
     token = websocket.query_params.get("token")
     if not token:
         await websocket.close(code=4001)
-        return None
+        return
     payload = decode_token(token)
     if not payload:
         await websocket.close(code=4001)
-        return None
-    return payload["sub"]
-
-
-@router.websocket("/ws/{project_id}")
-async def websocket_endpoint(websocket: WebSocket, project_id: str):
-    user_id = await get_current_user_ws(websocket)
-    if not user_id:
         return
+    user_id = payload["sub"]
     await manager.connect(websocket, user_id)
-    # Subscribe to Redis channel for project updates
     pubsub = redis_client.pubsub()
     await pubsub.subscribe(f"project:{project_id}")
     try:

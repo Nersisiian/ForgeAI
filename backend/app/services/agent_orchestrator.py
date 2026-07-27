@@ -1,4 +1,5 @@
 from uuid import UUID
+from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.models.project import Project
 from app.db.models.generation_task import GenerationTask

@@ -1,8 +1,6 @@
 ﻿import re
-from uuid import UUID
 from app.agents.base import BaseAgent
 from app.db.models.project import Project
-from app.services.llm_service import LLMService
 import structlog
 
 logger = structlog.get_logger(__name__)
@@ -34,8 +32,7 @@ Provide each file in the format:
 ... code ...
 Include: main.py, config.py, database.py, models, schemas, api routes, services, dependencies, middleware, Dockerfile, requirements.txt.
 """
-
-def _parse_files(self, text: str) -> dict[str, str]:
-pattern = r'---FILE:\s(.+?)---\s(?:python)?\n(.*?)'
-matches = re.findall(pattern, text, re.DOTALL)
-return {path.strip(): code.strip() for path, code in matches}
+    def _parse_files(self, text: str) -> dict[str, str]:
+        pattern = r"---FILE:\s(.+?)---\s(?:```python\n)?(.*?)```?" 
+        matches = re.findall(pattern, text, re.DOTALL)
+        return {path.strip(): code.strip() for path, code in matches}
