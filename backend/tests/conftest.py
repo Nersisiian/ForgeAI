@@ -1,4 +1,5 @@
 ﻿import os
+
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -8,9 +9,10 @@ os.environ["DATABASE_URL"] = os.getenv(
     "postgresql+asyncpg://postgres:postgres@localhost:5432/testdb",
 )
 
-import app.db.models  # noqa: F401
-from app.core.database import get_db_session
-from app.db.base import Base
+# Импорты моделей и базы после установки переменной окружения
+import app.db.models  # noqa: E402,F401
+from app.core.database import get_db_session  # noqa: E402
+from app.db.base import Base  # noqa: E402
 
 TEST_DATABASE_URL = os.environ["DATABASE_URL"]
 engine = create_async_engine(TEST_DATABASE_URL, echo=False)
