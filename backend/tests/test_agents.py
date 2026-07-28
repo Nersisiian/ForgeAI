@@ -1,26 +1,38 @@
-import pytest
+﻿import pytest
 from uuid import uuid4
 from unittest.mock import AsyncMock, patch
+
+from app.db.models.project import Project
+from app.db.models.generation_task import GenerationTask
+from app.db.models.file_artifact import FileArtifact
+from app.db.models.user import User
+from app.core.security import get_password_hash
+
 from app.agents.planner import PlannerAgent
 from app.agents.architect import ArchitectAgent
 from app.agents.backend_generator import BackendGeneratorAgent
 from app.agents.frontend_generator import FrontendGeneratorAgent
 from app.agents.review_agent import ReviewAgent
 from app.agents.fix_agent import FixAgent
-from app.db.models.project import Project
-from app.db.models.generation_task import GenerationTask
-from app.db.models.file_artifact import FileArtifact
 from app.services.llm_service import LLMService
 
 
 @pytest.mark.asyncio
 async def test_planner_agent_execute(db_session):
+    user = User(
+        email="test@example.com",
+        hashed_password=get_password_hash("secret"),
+        is_active=True,
+    )
+    db_session.add(user)
+    await db_session.commit()
+
     project = Project(
         id=uuid4(),
         name="Test",
         natural_language_query="Build CRM",
         target_type="fastapi",
-        owner_id=uuid4(),
+        owner_id=user.id,
     )
     task = GenerationTask(id=uuid4(), project_id=project.id, agent_type="planner")
     db_session.add_all([project, task])
@@ -31,15 +43,12 @@ async def test_planner_agent_execute(db_session):
         agent = PlannerAgent(db_session, task.id, project.id)
         await agent.execute()
 
-    # Check artifact created
     artifacts = (
-        (
-            await db_session.execute(
-                __import__("sqlalchemy")
-                .select(FileArtifact)
-                .where(FileArtifact.project_id == project.id)
+        (await db_session.execute(
+            __import__('sqlalchemy').select(FileArtifact).where(
+                FileArtifact.project_id == project.id
             )
-        )
+        ))
         .scalars()
         .all()
     )
@@ -50,12 +59,20 @@ async def test_planner_agent_execute(db_session):
 
 @pytest.mark.asyncio
 async def test_architect_agent_execute(db_session):
+    user = User(
+        email="test2@example.com",
+        hashed_password=get_password_hash("secret"),
+        is_active=True,
+    )
+    db_session.add(user)
+    await db_session.commit()
+
     project = Project(
         id=uuid4(),
         name="Test",
         natural_language_query="Build CRM",
         target_type="fastapi",
-        owner_id=uuid4(),
+        owner_id=user.id,
     )
     task = GenerationTask(id=uuid4(), project_id=project.id, agent_type="architect")
     db_session.add_all([project, task])
@@ -67,16 +84,12 @@ async def test_architect_agent_execute(db_session):
         await agent.execute()
 
     artifacts = (
-        (
-            await db_session.execute(
-                __import__("sqlalchemy")
-                .select(FileArtifact)
-                .where(
-                    FileArtifact.project_id == project.id,
-                    FileArtifact.file_path == "ARCHITECTURE.md",
-                )
+        (await db_session.execute(
+            __import__('sqlalchemy').select(FileArtifact).where(
+                FileArtifact.project_id == project.id,
+                FileArtifact.file_path == "ARCHITECTURE.md",
             )
-        )
+        ))
         .scalars()
         .all()
     )
@@ -86,12 +99,20 @@ async def test_architect_agent_execute(db_session):
 
 @pytest.mark.asyncio
 async def test_backend_generator_parse_files(db_session):
+    user = User(
+        email="test3@example.com",
+        hashed_password=get_password_hash("secret"),
+        is_active=True,
+    )
+    db_session.add(user)
+    await db_session.commit()
+
     project = Project(
         id=uuid4(),
         name="Test",
         natural_language_query="API",
         target_type="fastapi",
-        owner_id=uuid4(),
+        owner_id=user.id,
     )
     task = GenerationTask(id=uuid4(), project_id=project.id, agent_type="backend")
     db_session.add_all([project, task])
@@ -109,22 +130,17 @@ async def test_backend_generator_parse_files(db_session):
     )
     with patch.object(LLMService, "generate", new_callable=AsyncMock) as mock_llm:
         mock_llm.return_value = mock_response
-        # also mock validation to always pass
-        with patch.object(
-            BackendGeneratorAgent, "_validate_and_fix", new_callable=AsyncMock
-        ) as mock_validate:
+        with patch.object(BackendGeneratorAgent, "_validate_and_fix", new_callable=AsyncMock) as mock_validate:
             mock_validate.side_effect = lambda path, content, tid: content
             agent = BackendGeneratorAgent(db_session, task.id, project.id)
             await agent.execute()
 
     artifacts = (
-        (
-            await db_session.execute(
-                __import__("sqlalchemy")
-                .select(FileArtifact)
-                .where(FileArtifact.project_id == project.id)
+        (await db_session.execute(
+            __import__('sqlalchemy').select(FileArtifact).where(
+                FileArtifact.project_id == project.id
             )
-        )
+        ))
         .scalars()
         .all()
     )
@@ -135,12 +151,20 @@ async def test_backend_generator_parse_files(db_session):
 
 @pytest.mark.asyncio
 async def test_frontend_generator_execute(db_session):
+    user = User(
+        email="test4@example.com",
+        hashed_password=get_password_hash("secret"),
+        is_active=True,
+    )
+    db_session.add(user)
+    await db_session.commit()
+
     project = Project(
         id=uuid4(),
         name="Test",
         natural_language_query="UI",
         target_type="fastapi",
-        owner_id=uuid4(),
+        owner_id=user.id,
     )
     task = GenerationTask(id=uuid4(), project_id=project.id, agent_type="frontend")
     db_session.add_all([project, task])
@@ -159,13 +183,11 @@ async def test_frontend_generator_execute(db_session):
         await agent.execute()
 
     artifacts = (
-        (
-            await db_session.execute(
-                __import__("sqlalchemy")
-                .select(FileArtifact)
-                .where(FileArtifact.project_id == project.id)
+        (await db_session.execute(
+            __import__('sqlalchemy').select(FileArtifact).where(
+                FileArtifact.project_id == project.id
             )
-        )
+        ))
         .scalars()
         .all()
     )
@@ -174,12 +196,20 @@ async def test_frontend_generator_execute(db_session):
 
 @pytest.mark.asyncio
 async def test_review_agent_finds_issues(db_session):
+    user = User(
+        email="test5@example.com",
+        hashed_password=get_password_hash("secret"),
+        is_active=True,
+    )
+    db_session.add(user)
+    await db_session.commit()
+
     project = Project(
         id=uuid4(),
         name="Test",
         natural_language_query="X",
         target_type="fastapi",
-        owner_id=uuid4(),
+        owner_id=user.id,
     )
     task = GenerationTask(id=uuid4(), project_id=project.id, agent_type="review")
     bad_artifact = FileArtifact(
@@ -194,9 +224,7 @@ async def test_review_agent_finds_issues(db_session):
     await db_session.commit()
 
     with patch.object(ReviewAgent, "validator") as mock_validator:
-        mock_validator.lint_code = AsyncMock(
-            return_value=(False, ["E302 expected 2 blank lines"])
-        )
+        mock_validator.lint_code = AsyncMock(return_value=(False, ["E302 expected 2 blank lines"]))
         agent = ReviewAgent(db_session, task.id, project.id)
         issues = await agent.review()
         assert len(issues) == 1
@@ -206,12 +234,20 @@ async def test_review_agent_finds_issues(db_session):
 
 @pytest.mark.asyncio
 async def test_fix_agent_repairs_artifact(db_session):
+    user = User(
+        email="test6@example.com",
+        hashed_password=get_password_hash("secret"),
+        is_active=True,
+    )
+    db_session.add(user)
+    await db_session.commit()
+
     project = Project(
         id=uuid4(),
         name="Test",
         natural_language_query="X",
         target_type="fastapi",
-        owner_id=uuid4(),
+        owner_id=user.id,
     )
     task = GenerationTask(
         id=uuid4(),
@@ -236,7 +272,6 @@ async def test_fix_agent_repairs_artifact(db_session):
             agent = FixAgent(db_session, task.id, project.id)
             await agent.execute()
 
-    # reload artifact
     await db_session.refresh(artifact)
     assert artifact.content == "def f(): pass\n\nx=1"
     assert artifact.status == "approved"

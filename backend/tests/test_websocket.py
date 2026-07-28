@@ -1,17 +1,19 @@
-import pytest
-import asyncio
+﻿import asyncio
 from unittest.mock import patch, AsyncMock
+
+import pytest
 from fastapi.testclient import TestClient
-from app.main import app
-from app.core.security import get_password_hash
+
 from app.db.models.user import User
 from app.db.models.project import Project
-
+from app.core.security import get_password_hash
 
 @pytest.mark.asyncio
 async def test_websocket_connection_and_disconnect(db_session):
     user = User(
-        email="ws@test.com", hashed_password=get_password_hash("test"), is_active=True
+        email="ws@test.com",
+        hashed_password=get_password_hash("test"),
+        is_active=True,
     )
     db_session.add(user)
     await db_session.commit()
@@ -26,25 +28,20 @@ async def test_websocket_connection_and_disconnect(db_session):
     db_session.add(project)
     await db_session.commit()
 
-    async def override_get_db():
-        yield db_session
+    # Импортируем app после того, как база готова (уже в test_app)
+    from app.main import app
 
-    with patch(
-        "app.api.v1.websocket.get_current_user_ws", new_callable=AsyncMock
-    ) as mock_ws_auth:
-        mock_ws_auth.return_value = str(user.id)
-        client = TestClient(app)
-        with client.websocket_connect(
-            f"/api/v1/ws/{project_id}?token=fake"
-        ) as websocket:
+    client = TestClient(app)
+    with patch("app.api.v1.websocket.decode_token", return_value={"sub": str(user.id)}):
+        with client.websocket_connect(f"/api/v1/ws/{project_id}?token=fake") as websocket:
             await asyncio.sleep(0.1)
             assert websocket is not None
             websocket.close()
 
-
 @pytest.mark.asyncio
 async def test_websocket_invalid_token_rejected():
     with patch("app.api.v1.websocket.decode_token", return_value=None):
+        from app.main import app
         client = TestClient(app)
         with pytest.raises(Exception):
             with client.websocket_connect("/api/v1/ws/some-id?token=bad") as _:

@@ -5,13 +5,14 @@ import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from app.db.base import Base
-from app.main import app
-
-TEST_DATABASE_URL = os.getenv(
+# Устанавливаем тестовую БД ДО импорта приложения
+os.environ["DATABASE_URL"] = os.getenv(
     "TEST_DATABASE_URL",
     "postgresql+asyncpg://postgres:postgres@localhost:5432/testdb",
 )
+from app.db.base import Base
+
+TEST_DATABASE_URL = os.environ["DATABASE_URL"]
 test_engine = create_async_engine(TEST_DATABASE_URL, echo=False)
 TestSessionLocal = async_sessionmaker(
     bind=test_engine, class_=AsyncSession, expire_on_commit=False
@@ -32,20 +33,26 @@ def event_loop():
     loop.close()
 
 
-@pytest_asyncio.fixture(scope="function")
-async def db_session():
+@pytest_asyncio.fixture(scope="session")
+async def test_app():
     global _engine_created
     if not _engine_created:
         await _create_tables()
         _engine_created = True
+    from app.main import app
+    return app
+
+
+@pytest_asyncio.fixture(scope="function")
+async def db_session(test_app):
     async with TestSessionLocal() as session:
         yield session
         await session.rollback()
 
 
 @pytest_asyncio.fixture(scope="function")
-async def client(db_session):
+async def client(test_app, db_session):
     async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
+        transport=ASGITransport(app=test_app), base_url="http://test"
     ) as ac:
         yield ac
