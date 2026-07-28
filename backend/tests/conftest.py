@@ -1,15 +1,18 @@
-п»їimport os
+import asyncio
+import os
 
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+# Устанавливаем тестовую БД до любого импорта, который может её читать
 os.environ["DATABASE_URL"] = os.getenv(
     "TEST_DATABASE_URL",
     "postgresql+asyncpg://postgres:postgres@localhost:5432/testdb",
 )
 
-from app.db.base import Base
+from app.db.base import Base  # noqa: E402
+from app.core.database import get_db_session  # noqa: E402
 
 TEST_DATABASE_URL = os.environ["DATABASE_URL"]
 engine = create_async_engine(TEST_DATABASE_URL, echo=False)
@@ -18,11 +21,28 @@ TestSessionLocal = async_sessionmaker(
 )
 
 
+async def override_get_db():
+    async with TestSessionLocal() as session:
+        yield session
+
+
+@pytest_asyncio.fixture(scope="session")
+def event_loop():
+    """Стандартный event loop для pytest-asyncio (без ручного создания)."""
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
+
+
 @pytest_asyncio.fixture(scope="session")
 async def test_app():
+    """Создаём таблицы и возвращаем приложение с переопределённой БД."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
     from app.main import app
+
+    app.dependency_overrides[get_db_session] = override_get_db
     return app
 
 
