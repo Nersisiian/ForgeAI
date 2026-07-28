@@ -1,4 +1,4 @@
-п»їimport os
+import os
 
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
@@ -9,10 +9,10 @@ os.environ["DATABASE_URL"] = os.getenv(
     "postgresql+asyncpg://postgres:postgres@localhost:5432/testdb",
 )
 
-# РРјРїРѕСЂС‚С‹ РјРѕРґРµР»РµР№ Рё Р±Р°Р·С‹ РїРѕСЃР»Рµ СѓСЃС‚Р°РЅРѕРІРєРё РїРµСЂРµРјРµРЅРЅРѕР№ РѕРєСЂСѓР¶РµРЅРёСЏ
-import app.db.models  # noqa: E402,F401
-from app.core.database import get_db_session  # noqa: E402
-from app.db.base import Base  # noqa: E402
+# Импорты моделей и базы после установки переменной окружения
+import app.db.models
+from app.core.database import get_db_session
+from app.db.base import Base
 
 TEST_DATABASE_URL = os.environ["DATABASE_URL"]
 engine = create_async_engine(TEST_DATABASE_URL, echo=False)
