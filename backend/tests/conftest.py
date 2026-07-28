@@ -1,12 +1,11 @@
-п»їimport pytest_asyncio
+import pytest_asyncio
 import os
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from app.db.base import Base
-from app.core.config import settings
 from app.main import app
 from httpx import AsyncClient, ASGITransport
 
-# Р’ CI РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ postgres:16 c POSTGRES_DB=testdb, РёРЅР°С‡Рµ Р»РѕРєР°Р»СЊРЅРѕ testdb
+# В CI используется postgres:16 c POSTGRES_DB=testdb, иначе локально testdb
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "postgresql+asyncpg://postgres:postgres@localhost:5432/testdb")
 
 test_engine = create_async_engine(TEST_DATABASE_URL, echo=False)
