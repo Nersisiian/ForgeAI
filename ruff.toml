@@ -1,8 +1,8 @@
-target-version = "py312"
+﻿target-version = "py312"
 
 [lint]
-ignore = ["E402"]
 ignore = [
+    "E402",
     "B008",
     "BLE001",
     "PLW1510",
@@ -14,5 +14,7 @@ ignore = [
     "UP007",
     "UP017",
     "UP035",
+    "UP045",
     "RUF022",
+    "ASYNC221",
 ]
