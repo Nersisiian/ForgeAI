@@ -1,5 +1,5 @@
-п»їimport asyncio
-from unittest.mock import patch, AsyncMock
+import asyncio
+from unittest.mock import patch
 
 import pytest
 from fastapi.testclient import TestClient
@@ -28,7 +28,7 @@ async def test_websocket_connection_and_disconnect(db_session):
     db_session.add(project)
     await db_session.commit()
 
-    # РРјРїРѕСЂС‚РёСЂСѓРµРј app РїРѕСЃР»Рµ С‚РѕРіРѕ, РєР°Рє Р±Р°Р·Р° РіРѕС‚РѕРІР° (СѓР¶Рµ РІ test_app)
+    # Импортируем app после того, как база готова (уже в test_app)
     from app.main import app
 
     client = TestClient(app)
