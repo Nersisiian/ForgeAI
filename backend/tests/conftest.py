@@ -9,8 +9,7 @@ os.environ["DATABASE_URL"] = os.getenv(
     "postgresql+asyncpg://postgres:postgres@localhost:5432/testdb",
 )
 
-# Импорты моделей и базы после установки переменной окружения
-import app.db.models
+import app.db.models  # noqa: F401
 from app.core.database import get_db_session
 from app.db.base import Base
 
