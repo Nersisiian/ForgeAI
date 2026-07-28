@@ -1,16 +1,16 @@
-import pytest_asyncio
+﻿import pytest_asyncio
+import os
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from app.db.base import Base
 from app.core.config import settings
 from app.main import app
 from httpx import AsyncClient, ASGITransport
 
-test_engine = create_async_engine(
-    str(settings.DATABASE_URL).replace("pythonauto", "testdb"), echo=False
-)
-TestSessionLocal = async_sessionmaker(
-    bind=test_engine, class_=AsyncSession, expire_on_commit=False
-)
+# В CI используется postgres:16 c POSTGRES_DB=testdb, иначе локально testdb
+TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "postgresql+asyncpg://postgres:postgres@localhost:5432/testdb")
+
+test_engine = create_async_engine(TEST_DATABASE_URL, echo=False)
+TestSessionLocal = async_sessionmaker(bind=test_engine, class_=AsyncSession, expire_on_commit=False)
 
 
 @pytest_asyncio.fixture(scope="session")
@@ -30,7 +30,5 @@ async def db_session(db_engine):
 
 @pytest_asyncio.fixture
 async def client(db_session):
-    async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
-    ) as ac:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
