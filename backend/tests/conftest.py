@@ -1,4 +1,6 @@
-﻿import os
+﻿# ruff: noqa: E402
+import os
+
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -8,10 +10,9 @@ os.environ["DATABASE_URL"] = os.getenv(
     "postgresql+asyncpg://postgres:postgres@localhost:5432/testdb",
 )
 
-# Импорт моделей, чтобы они зарегистрировались в Base.metadata
-import app.db.models  # noqa: F401
-from app.db.base import Base
+import app.db.models  # noqa: F401  # регистрация моделей
 from app.core.database import get_db_session
+from app.db.base import Base
 
 TEST_DATABASE_URL = os.environ["DATABASE_URL"]
 engine = create_async_engine(TEST_DATABASE_URL, echo=False)
