@@ -52,27 +52,85 @@ class AgentOrchestrator:
 
         target = project.target_type
         if target in ("fastapi", "rest_api", "microservice"):
-            pipeline = ["planner", "architect", "database", "backend", "frontend", "docker", "testing", "documentation"]
+            pipeline = [
+                "planner",
+                "architect",
+                "database",
+                "backend",
+                "frontend",
+                "docker",
+                "testing",
+                "documentation",
+            ]
         elif target == "django":
-            pipeline = ["planner", "architect", "database", "django", "docker", "testing", "documentation"]
+            pipeline = [
+                "planner",
+                "architect",
+                "database",
+                "django",
+                "docker",
+                "testing",
+                "documentation",
+            ]
         elif target == "telegram_bot":
-            pipeline = ["planner", "architect", "database", "telegram_bot", "docker", "testing", "documentation"]
+            pipeline = [
+                "planner",
+                "architect",
+                "database",
+                "telegram_bot",
+                "docker",
+                "testing",
+                "documentation",
+            ]
         elif target == "discord_bot":
             # Пока заглушка, можно позже добавить агента
-            pipeline = ["planner", "architect", "backend", "docker", "testing", "documentation"]
+            pipeline = [
+                "planner",
+                "architect",
+                "backend",
+                "docker",
+                "testing",
+                "documentation",
+            ]
         elif target == "cli":
-            pipeline = ["planner", "architect", "database", "cli", "docker", "testing", "documentation"]
+            pipeline = [
+                "planner",
+                "architect",
+                "database",
+                "cli",
+                "docker",
+                "testing",
+                "documentation",
+            ]
         elif target == "desktop":
-            pipeline = ["planner", "architect", "frontend", "docker", "testing", "documentation"]
+            pipeline = [
+                "planner",
+                "architect",
+                "frontend",
+                "docker",
+                "testing",
+                "documentation",
+            ]
         else:
-            pipeline = ["planner", "architect", "backend", "frontend", "docker", "testing", "documentation"]
+            pipeline = [
+                "planner",
+                "architect",
+                "backend",
+                "frontend",
+                "docker",
+                "testing",
+                "documentation",
+            ]
 
         for agent_type in pipeline:
             task = GenerationTask(
                 project_id=self.project_id,
                 agent_type=agent_type,
                 status="queued",
-                input_data={"project_query": project.natural_language_query, "target_type": target},
+                input_data={
+                    "project_query": project.natural_language_query,
+                    "target_type": target,
+                },
             )
             self.session.add(task)
             await self.session.commit()
@@ -97,7 +155,9 @@ class AgentOrchestrator:
         await self._review_and_fix(project)
 
     async def _review_and_fix(self, project: Project):
-        review_task = GenerationTask(project_id=project.id, agent_type="review", status="queued")
+        review_task = GenerationTask(
+            project_id=project.id, agent_type="review", status="queued"
+        )
         self.session.add(review_task)
         await self.session.commit()
         await self.session.refresh(review_task)
@@ -116,8 +176,12 @@ class AgentOrchestrator:
             return
 
         if issues:
-            fix_task = GenerationTask(project_id=project.id, agent_type="fix", status="queued",
-                                       input_data={"issues": issues})
+            fix_task = GenerationTask(
+                project_id=project.id,
+                agent_type="fix",
+                status="queued",
+                input_data={"issues": issues},
+            )
             self.session.add(fix_task)
             await self.session.commit()
             await self.session.refresh(fix_task)
