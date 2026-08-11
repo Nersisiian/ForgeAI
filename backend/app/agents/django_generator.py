@@ -40,11 +40,11 @@ Include:
 
 Provide each file in the format:
 ---FILE: path/to/file.py---
-```python
+`python
 ... code ...
 """
 
-def _parse_files(self, text: str) -> dict[str, str]:
-pattern = r'---FILE:\s(.+?)---\s(?:python)?\n(.*?)'
-matches = re.findall(pattern, text, re.DOTALL)
-return {path.strip(): code.strip() for path, code in matches}
+    def _parse_files(self, text: str) -> dict[str, str]:
+        pattern = r"---FILE:\s*(.+?)---\s*`(?:python)?\n(.*?)`"
+        matches = re.findall(pattern, text, re.DOTALL)
+        return {path.strip(): code.strip() for path, code in matches}
